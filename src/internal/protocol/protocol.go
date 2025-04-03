@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 )
 
 /*
@@ -97,6 +98,9 @@ func (t *TwissTorr84FS) Request(message string) ([]byte, error) {
 	}
 	t.Serial.SetDelimiter("")
 
+	// This time is required to wait for the device send the checksum
+	time.Sleep(20 * time.Millisecond)
+
 	checksum, err := t.Serial.Read(2)
 	if err != nil {
 		return nil, fmt.Errorf("error reading checksum: %v", err)
@@ -107,6 +111,10 @@ func (t *TwissTorr84FS) Request(message string) ([]byte, error) {
 	}
 
 	end := len(response)-1
+	if end < 2 {
+		return nil, fmt.Errorf("invalid response length: %d", len(response))
+	}
+
 	return response[2:end], nil
 }
 
@@ -120,8 +128,12 @@ func (t *TwissTorr84FS) GetInt(window string) (int, error) {
 		return 0, fmt.Errorf("error getting the value: %v", err)
 	}
 
-	responseStr := string(response)
-	fmt.Printf("response: %v\n", responseStr)
+	window_rx := string(response[0:3])
+	if window_rx != window {
+		return 0, fmt.Errorf("response window %s does not match requested window %s", window_rx, window)
+	}
+
+	responseStr := string(response[3:])
 	if(strings.Contains(responseStr, ".")) {
 		fmt.Print("This is a float number")
 		return 0, nil
@@ -140,8 +152,12 @@ func (t *TwissTorr84FS) GetFloat(window string) (float64, error) {
 		return 0, fmt.Errorf("error getting the value: %v", err)
 	}
 
+	window_rx := string(response[0:3])
+	if window_rx != window {
+		return 0, fmt.Errorf("response window %s does not match requested window %s", window_rx, window)
+	}
+
 	responseStr := string(response)
-	fmt.Printf("response: %v\n", responseStr)
 	return strconv.ParseFloat(responseStr, 64)
 }
 
@@ -154,6 +170,12 @@ func (t *TwissTorr84FS) GetAlphanumeric(window string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("error getting the value: %v", err)
 	}
+
+	window_rx := string(response[0:3])
+	if window_rx != window {
+		return "", fmt.Errorf("response window %s does not match requested window %s", window_rx, window)
+	}
+
 	return string(response), nil
 }
 

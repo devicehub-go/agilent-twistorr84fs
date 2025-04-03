@@ -1,7 +1,7 @@
 /*
 Author: Leonardo Rossi Leao
 Contact: leonardo.leao@cnpem.br
-Last Update: March 7th, 2025
+Last Update: April 2nd, 2025
 Descriptions: This module abstract the communication with
 Agilent TwisTorr 84 FS AG Rack Controller, providing an interface
 to monitor and control the device.
@@ -28,23 +28,14 @@ Notes:
 func New(port string, baudrate int, parity string, databits int,
 		 stopbits int, deviceNumber int) (*protocol.TwissTorr84FS) {
 
-	//options := manager.CommunicationOptions {
-	//	Protocol: manager.Serial,
-	//	Serial: manager.SerialOptions{
-	//		Port: port,
-	//		BaudRate: baudrate,
-	//		Parity: parity,
-	//		DataBits: databits,
-	//		StopBits: stopbits,
-	//	},
-	//	Delimiter: "",
-	//}
-
 	options := manager.CommunicationOptions {
-		Protocol: manager.TCP,
-		TCP: manager.TCPOptions{
-			Host: "localhost",
-			Port: 65432,
+		Protocol: manager.Serial,
+		Serial: manager.SerialOptions{
+			Port: port,
+			BaudRate: baudrate,
+			Parity: parity,
+			DataBits: databits,
+			StopBits: stopbits,
 		},
 		Delimiter: "",
 	}
@@ -56,7 +47,8 @@ func New(port string, baudrate int, parity string, databits int,
 }
 
 func main() {
-	twisstor := New("COM1", 9600, "None", 8, 1, 0)
-	twisstor.Serial.Connect()
-	fmt.Print(twisstor.TurnOn())
+	twisstor := New("COM4", 9600, "N", 8, 1, 0)
+	fmt.Println(twisstor.Serial.Connect())
+	fmt.Println(twisstor.SetGaugeSetpointType(3))
+	fmt.Println(twisstor.GetGaugeSetpointType())
 }

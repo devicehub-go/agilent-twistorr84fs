@@ -262,14 +262,14 @@ func (t *TwissTorr84FS) SetRotationalFrequency(value uint) error {
 	if value > 9999 {
 		return fmt.Errorf("invalid value for rotational frequency")
 	}
-	return t.SetInt("118", int(value))
+	return t.SetInt("120", int(value))
 }
 
 /*
 Gets rotational frequency setting
 */
 func (t *TwissTorr84FS) GetRotationalFrequency() (int, error) {
-	return t.GetInt("118")
+	return t.GetInt("120")
 }
 
 /*
