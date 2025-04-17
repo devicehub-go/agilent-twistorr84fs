@@ -1,13 +1,6 @@
 package protocol
 
-import manager "gitlab.cnpem.br/ads/vacuum-devices/communication"
-
 type SerialType uint8
-
-type TwissTorr84FS struct {
-	DeviceNumber int
-	Serial manager.Communication
-}
 
 const (
 	ACK       byte = 0x06

@@ -6,7 +6,14 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	manager "gitlab.cnpem.br/ads/vacuum-devices/communication"
 )
+
+type TwissTorr84FS struct {
+	DeviceNumber int
+	Serial manager.Communication
+}
 
 /*
 Calculates the checksum of a message using
@@ -21,6 +28,27 @@ func calculateChecksum(message []byte) []byte {
 		checksum ^= b
 	}
 	return []byte(fmt.Sprintf("%02X", checksum))
+}
+
+/*
+Establishes a connection with the device
+*/
+func (t *TwissTorr84FS) Connect() error {
+	return t.Serial.Connect()
+}
+
+/*
+Closes the connection with the device
+*/
+func (t *TwissTorr84FS) Disconnect() error {
+	return t.Serial.Disconnect()
+}
+
+/*
+Checks if the device is connected
+*/
+func (t *TwissTorr84FS) IsConnected() bool {
+	return t.Serial.IsConnected()
 }
 
 /*
