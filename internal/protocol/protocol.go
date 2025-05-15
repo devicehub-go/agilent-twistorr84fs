@@ -210,8 +210,20 @@ func (t *TwissTorr84FS) GetAlphanumeric(window string) (string, error) {
 /*
 Sets the value of a window as an integer.
 */
-func (t *TwissTorr84FS) SetInt(window string, value int) error {
+func (t *TwissTorr84FS) SetLogic(window string, value int) error {
 	message := t.FormatWriteCmd(window, fmt.Sprintf("%d", value))
+	response, err := t.Request(message)
+	if err != nil {
+		return fmt.Errorf("error setting the value: %v", err)
+	}
+	return ValidateStatusReponse(response[0])
+}
+
+/*
+Sets the value of a window as an integer.
+*/
+func (t *TwissTorr84FS) SetNumeric(window string, value int) error {
+	message := t.FormatWriteCmd(window, fmt.Sprintf("%06d", value))
 	response, err := t.Request(message)
 	if err != nil {
 		return fmt.Errorf("error setting the value: %v", err)

@@ -4,14 +4,14 @@ package protocol
 Turns the turbo pump on.
 */
 func (t *TwissTorr84FS) TurnOn() error {
-	return t.SetInt("000", 1)
+	return t.SetLogic("000", 1)
 }
 
 /*
 Turns the turbo pump off.
 */
 func (t *TwissTorr84FS) TurnOff() error {
-	return t.SetInt("000", 0)
+	return t.SetLogic("000", 0)
 }
 
 /*
@@ -25,21 +25,21 @@ func (t *TwissTorr84FS) GetStatus() (int, error) {
 Resets the pump life counter.
 */
 func (t *TwissTorr84FS) ResetPumpLife() error {
-	return t.SetInt("109", 0)
+	return t.SetLogic("109", 0)
 }
 
 /*
 Opens the vent valve.
 */
 func (t *TwissTorr84FS) OpenVentValve() error {
-	return t.SetInt("122", 1)
+	return t.SetLogic("122", 1)
 }
 
 /*
 Closes the vent valve.
 */
 func (t *TwissTorr84FS) CloseVentValve() error {
-	return t.SetInt("122", 0)
+	return t.SetLogic("122", 0)
 }
 
 /*

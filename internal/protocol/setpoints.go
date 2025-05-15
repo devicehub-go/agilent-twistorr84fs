@@ -12,7 +12,7 @@ func(t *TwissTorr84FS) SetLowSpeedActivation(value int) error {
 	if(value < 0 || value > 1) {
 		return fmt.Errorf("invalid value for soft start")
 	}
-	return t.SetInt("001", int(value))
+	return t.SetLogic("001", int(value))
 }
 
 /*
@@ -22,7 +22,7 @@ Parameters:
 	- value: 0 for serial, 1 for remote.
 */
 func(t *TwissTorr84FS) SetCommunicationMode(value int) error {
-	return t.SetInt("008", int(value))
+	return t.SetLogic("008", int(value))
 }
 
 /*
@@ -47,7 +47,7 @@ func(t *TwissTorr84FS) SetSoftStart(value int) error {
 	if(value < 0 || value > 1) {
 		return fmt.Errorf("invalid value for soft start")
 	}
-	return t.SetInt("100", int(value))
+	return t.SetLogic("100", int(value))
 }
 
 /*
@@ -72,14 +72,14 @@ func (t *TwissTorr84FS) SetR1SetpointType(value int) error {
 	if value < 0 || value > 4 {
 		return fmt.Errorf("invalid value for R1 set point type")
 	}
-	return t.SetInt("101", int(value))
+	return t.SetNumeric("101", int(value))
 }
 
 /*
 Sets R1 set point value.
 */
 func (t *TwissTorr84FS) SetR1Setpoint(value int) error {
-	return t.SetInt("102", int(value))
+	return t.SetNumeric("102", int(value))
 }
 
 /*
@@ -97,7 +97,7 @@ func (t *TwissTorr84FS) SetTimeDelay(value uint) error {
 	if value > 99999 {
 		return fmt.Errorf("invalid value for time delay")
 	}
-	return t.SetInt("103", int(value))
+	return t.SetNumeric("103", int(value))
 }
 
 /*
@@ -120,7 +120,7 @@ func (t *TwissTorr84FS) SetSignalActivationType(value uint) error {
 	if value > 1 {
 		return fmt.Errorf("invalid value for signal activation type")
 	}
-	return t.SetInt("104", int(value))
+	return t.SetLogic("104", int(value))
 }
 
 /*
@@ -140,7 +140,7 @@ func (t *TwissTorr84FS) SetHysteresis(value uint) error {
 	if value > 100 {
 		return fmt.Errorf("invalid value for hysteresis")
 	}
-	return t.SetInt("105", int(value))
+	return t.SetNumeric("105", int(value))
 }
 
 /*
@@ -160,7 +160,7 @@ func (t *TwissTorr84FS) SetWaterCooling(value uint) error {
 	if value > 1 {
 		return fmt.Errorf("invalid value for water cooling")
 	}
-	return t.SetInt("106", int(value))
+	return t.SetLogic("106", int(value))
 }
 
 /*
@@ -177,7 +177,7 @@ func (t *TwissTorr84FS) SetActiveStop(value uint) error {
 	if value > 1 {
 		return fmt.Errorf("invalid value for active stop")
 	}
-	return t.SetInt("107", int(value))
+	return t.SetLogic("107", int(value))
 }
 
 /*
@@ -197,7 +197,7 @@ func (t *TwissTorr84FS) SetInterlockType(value uint) error {
 	if value > 1 {
 		return fmt.Errorf("invalid value for interlock type")
 	}
-	return t.SetInt("110", int(value))
+	return t.SetLogic("110", int(value))
 }
 
 /*
@@ -222,7 +222,7 @@ func (t *TwissTorr84FS) SetAnalogOutputType(value uint) error {
 	if value > 3 {
 		return fmt.Errorf("invalid value for analog output type")
 	}
-	return t.SetInt("111", int(value))
+	return t.SetLogic("111", int(value))
 }
 
 /*
@@ -242,7 +242,7 @@ func (t *TwissTorr84FS) SetLowSpeedFrequency(value uint) error {
 	if value > 9999 {
 		return fmt.Errorf("invalid value for low speed frequency")
 	}
-	return t.SetInt("117", int(value))
+	return t.SetNumeric("117", int(value))
 }
 
 /*
@@ -262,7 +262,7 @@ func (t *TwissTorr84FS) SetRotationalFrequency(value uint) error {
 	if value > 9999 {
 		return fmt.Errorf("invalid value for rotational frequency")
 	}
-	return t.SetInt("120", int(value))
+	return t.SetNumeric("120", int(value))
 }
 
 /*
@@ -282,7 +282,7 @@ func (t *TwissTorr84FS) SetVentValveOperation(value uint) error {
 	if value > 1 {
 		return fmt.Errorf("invalid value for vent valve operation")
 	}
-	return t.SetInt("125", int(value))
+	return t.SetLogic("125", int(value))
 }
 
 /*
@@ -302,7 +302,7 @@ func (t *TwissTorr84FS) SetVentValveOpeningDelay(value uint) error {
 	if value > 65535 {
 		return fmt.Errorf("invalid value for vent valve opening delay")
 	}
-	return t.SetInt("126", int(value))
+	return t.SetNumeric("126", int(value))
 }
 
 /*
@@ -326,7 +326,7 @@ func (t *TwissTorr84FS) SetGaugeSetpointType(value uint) error {
 	if value > 3 {
 		return fmt.Errorf("invalid value for gauge set point type")
 	}
-	return t.SetInt("136", int(value))
+	return t.SetNumeric("136", int(value))
 }
 
 /*
@@ -347,7 +347,7 @@ func (t *TwissTorr84FS) SetGaugeSetpoint(value uint) error {
 	if value > 9999 {
 		return fmt.Errorf("invalid value for gauge set point")
 	}
-	return t.SetInt("137", int(value))
+	return t.SetNumeric("137", int(value))
 }
 
 /*
