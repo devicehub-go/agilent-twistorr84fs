@@ -7,21 +7,15 @@ import (
 	"strings"
 	"time"
 
-	manager "gitlab.cnpem.br/ads/vacuum-devices/communication"
+	"github.com/devicehub-go/unicomm"
 )
 
 type TwissTorr84FS struct {
-	DeviceNumber int
-	Serial manager.Communication
+	DeviceNumber  int
+	Communication unicomm.Unicomm
 }
 
-/*
-Calculates the checksum of a message using
-the XOR operation.
-
-Parameters:
-	- message: byte array that represents the message.
-*/
+// Calculates the checksum of a message using XOR of bytes
 func calculateChecksum(message []byte) []byte {
 	checksum := byte(0)
 	for _, b := range []byte(message) {
@@ -30,31 +24,23 @@ func calculateChecksum(message []byte) []byte {
 	return []byte(fmt.Sprintf("%02X", checksum))
 }
 
-/*
-Establishes a connection with the device
-*/
+// Establishes a connection with the device
 func (t *TwissTorr84FS) Connect() error {
-	return t.Serial.Connect()
+	return t.Communication.Connect()
 }
 
-/*
-Closes the connection with the device
-*/
+// Closes the connection with the device
 func (t *TwissTorr84FS) Disconnect() error {
-	return t.Serial.Disconnect()
+	return t.Communication.Disconnect()
 }
 
-/*
-Checks if the device is connected
-*/
+// Checks if the device is connected
 func (t *TwissTorr84FS) IsConnected() bool {
-	return t.Serial.IsConnected()
+	return t.Communication.IsConnected()
 }
 
-/*
-Formats a write command to be sent to TwisTorr 84 FS AG 
-using the window protocol.
-*/
+// Formats a write command to be sent to TwisTorr 84 FS AG
+// using the window protocol
 func (t *TwissTorr84FS) FormatWriteCmd(window string, data string) string {
 	var sb strings.Builder
 
@@ -71,10 +57,8 @@ func (t *TwissTorr84FS) FormatWriteCmd(window string, data string) string {
 	return sb.String()
 }
 
-/*
-Formats a read command to be sent to TwisTorr 84 FS AG
-using the window protocol.
-*/
+// Formats a read command to be sent to TwisTorr 84 FS AG
+// using the window protocol
 func (t *TwissTorr84FS) FormatReadCmd(window string) string {
 	var sb strings.Builder
 
@@ -90,10 +74,8 @@ func (t *TwissTorr84FS) FormatReadCmd(window string) string {
 	return sb.String()
 }
 
-/*
-Validates the status response of a command.
-*/
-func ValidateStatusReponse(status byte) error{
+// Validates the status response of a command
+func ValidateStatusReponse(status byte) error {
 	switch status {
 	case ACK:
 		return nil
@@ -112,24 +94,19 @@ func ValidateStatusReponse(status byte) error{
 	}
 }
 
-/*
-Requests a message to the device and returns the response
-based on the window protocol.
-*/
+// Requests a message to the device and returns the response
 func (t *TwissTorr84FS) Request(message string) ([]byte, error) {
-	t.Serial.Write(message)
+	t.Communication.Write([]byte(message))
 
-	t.Serial.SetDelimiter(string(ETX))
-	response, err := t.Serial.ReadUntil()
+	response, err := t.Communication.ReadUntil(string(ETX))
 	if err != nil {
 		return nil, fmt.Errorf("error reading response: %v", err)
 	}
-	t.Serial.SetDelimiter("")
 
 	// This time is required to wait for the device send the checksum
 	time.Sleep(20 * time.Millisecond)
 
-	checksum, err := t.Serial.Read(2)
+	checksum, err := t.Communication.Read(2)
 	if err != nil {
 		return nil, fmt.Errorf("error reading checksum: %v", err)
 	}
@@ -138,7 +115,7 @@ func (t *TwissTorr84FS) Request(message string) ([]byte, error) {
 		return nil, fmt.Errorf("invalid checksum: %v", checksum)
 	}
 
-	end := len(response)-1
+	end := len(response) - 1
 	if end < 2 {
 		return nil, fmt.Errorf("invalid response length: %d", len(response))
 	}
@@ -146,9 +123,7 @@ func (t *TwissTorr84FS) Request(message string) ([]byte, error) {
 	return response[2:end], nil
 }
 
-/*
-Request the value of a window and returns it as an integer.
-*/
+// Request the value of a window and returns it as an integer
 func (t *TwissTorr84FS) GetInt(window string) (int, error) {
 	message := t.FormatReadCmd(window)
 	response, err := t.Request(message)
@@ -162,7 +137,7 @@ func (t *TwissTorr84FS) GetInt(window string) (int, error) {
 	}
 
 	responseStr := string(response[3:])
-	if(strings.Contains(responseStr, ".")) {
+	if strings.Contains(responseStr, ".") {
 		fmt.Print("This is a float number")
 		return 0, nil
 	}
@@ -170,9 +145,7 @@ func (t *TwissTorr84FS) GetInt(window string) (int, error) {
 	return strconv.Atoi(responseStr)
 }
 
-/*
-Request the value of a window and returns it as a float.
-*/
+// Request the value of a window and returns it as a float
 func (t *TwissTorr84FS) GetFloat(window string) (float64, error) {
 	message := t.FormatReadCmd(window)
 	response, err := t.Request(message)
@@ -189,9 +162,7 @@ func (t *TwissTorr84FS) GetFloat(window string) (float64, error) {
 	return strconv.ParseFloat(responseStr, 64)
 }
 
-/*
-Request the value of a window and returns it as a string.
-*/
+// Request the value of a window and returns it as a string.
 func (t *TwissTorr84FS) GetAlphanumeric(window string) (string, error) {
 	message := t.FormatReadCmd(window)
 	response, err := t.Request(message)
@@ -207,9 +178,7 @@ func (t *TwissTorr84FS) GetAlphanumeric(window string) (string, error) {
 	return string(response), nil
 }
 
-/*
-Sets the value of a window as an integer.
-*/
+// Sets the value of a window as a logic
 func (t *TwissTorr84FS) SetLogic(window string, value int) error {
 	message := t.FormatWriteCmd(window, fmt.Sprintf("%d", value))
 	response, err := t.Request(message)
@@ -219,9 +188,7 @@ func (t *TwissTorr84FS) SetLogic(window string, value int) error {
 	return ValidateStatusReponse(response[0])
 }
 
-/*
-Sets the value of a window as an integer.
-*/
+// Sets the value of a window as a numeric
 func (t *TwissTorr84FS) SetNumeric(window string, value int) error {
 	message := t.FormatWriteCmd(window, fmt.Sprintf("%06d", value))
 	response, err := t.Request(message)
