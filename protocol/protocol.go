@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/devicehub-go/unicomm"
@@ -13,6 +14,8 @@ import (
 type TwissTorr84FS struct {
 	DeviceNumber  int
 	Communication unicomm.Unicomm
+
+	mutex sync.Mutex
 }
 
 // Calculates the checksum of a message using XOR of bytes
@@ -26,16 +29,25 @@ func calculateChecksum(message []byte) []byte {
 
 // Establishes a connection with the device
 func (t *TwissTorr84FS) Connect() error {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
+
 	return t.Communication.Connect()
 }
 
 // Closes the connection with the device
 func (t *TwissTorr84FS) Disconnect() error {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
+
 	return t.Communication.Disconnect()
 }
 
 // Checks if the device is connected
 func (t *TwissTorr84FS) IsConnected() bool {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
+
 	return t.Communication.IsConnected()
 }
 
@@ -96,6 +108,9 @@ func ValidateStatusReponse(status byte) error {
 
 // Requests a message to the device and returns the response
 func (t *TwissTorr84FS) Request(message string) ([]byte, error) {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
+
 	t.Communication.Write([]byte(message))
 
 	response, err := t.Communication.ReadUntil(string(ETX))
